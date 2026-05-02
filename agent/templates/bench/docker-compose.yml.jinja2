@@ -26,6 +26,11 @@ services:
       - redis-cache
       - redis-queue
       - redis-socketio
+    deploy:
+      replicas: 2
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.{{ name }}-web.loadbalancer.sticky.cookie=true"
   socketio:
     image: {{ docker_image }}
     command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
@@ -38,6 +43,11 @@ services:
     depends_on:
       - redis-socketio
       - web
+    deploy:
+      replicas: 2
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.{{ name }}-socketio.loadbalancer.sticky.cookie=true"
   scheduler:
     image: {{ docker_image }}
     command: ["bench", "schedule"]
